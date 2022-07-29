@@ -1,8 +1,10 @@
 import { Request, Response } from "express";
+import { ObjectId } from "mongodb";
 import { connectToDatabase } from "../../services/mongodb";
+import { ExtendedAuthRequest } from "../../types/types";
 
 class CreateFeedController {
-  async handle(req: Request, res: Response) {
+  async handle(req: ExtendedAuthRequest, res: Response) {
     const { title, description, url } = req.body;
 
     if (!title || !description || !url) {
@@ -11,7 +13,7 @@ class CreateFeedController {
     const db = await connectToDatabase();
     const collection = db.collection("feeds");
 
-    const { id }: any = req;
+    const { id } = req;
 
     const checkUser = await collection.findOne({ id });
 
@@ -23,7 +25,7 @@ class CreateFeedController {
       title,
       description,
       url,
-      userId: id,
+      userId: new ObjectId(id),
     });
 
     return res
