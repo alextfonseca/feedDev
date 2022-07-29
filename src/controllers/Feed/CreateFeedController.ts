@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { ObjectId } from "mongodb";
 import { connectToDatabase } from "../../services/mongodb";
-import { ExtendedAuthRequest } from "../../types/types";
+import { ExtendedAuthRequest } from "../../types";
 
 class CreateFeedController {
   async handle(req: ExtendedAuthRequest, res: Response) {
@@ -10,6 +10,9 @@ class CreateFeedController {
     if (!title || !description || !url) {
       return res.status(400).json({ message: "Dados insuficientes" });
     }
+
+    // Joi Celebrate
+
     const db = await connectToDatabase();
     const collection = db.collection("feeds");
 
@@ -34,4 +37,4 @@ class CreateFeedController {
   }
 }
 
-export { CreateFeedController };
+export const createFeedController = new CreateFeedController();

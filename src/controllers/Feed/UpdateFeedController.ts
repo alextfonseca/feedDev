@@ -1,19 +1,18 @@
 import { Request, Response } from "express";
 import { ObjectId } from "mongodb";
 import { connectToDatabase } from "../../services/mongodb";
-import { ExtendedAuthRequest } from "../../types/types";
+import { ExtendedAuthRequest } from "../../types";
 
 class UpdateFeedController {
   async handle(req: ExtendedAuthRequest, res: Response) {
     const { title, description, url } = req.body;
-    const { id: feedId } = req.params;
 
     const db = await connectToDatabase();
     const collection = db.collection("feeds");
 
     const { id } = req;
 
-    const feeds = await collection.findOne({ _id: new ObjectId(feedId) });
+    const feeds = await collection.findOne({ _id: new ObjectId(req.params.id) });
 
     if (feeds.userId.toString() !== id) {
       return res
@@ -22,7 +21,7 @@ class UpdateFeedController {
     }
 
     await collection.updateOne(
-      { _id: new ObjectId(feedId) },
+      { _id: new ObjectId(req.params.id) },
       {
         $set: {
           title,
@@ -36,4 +35,4 @@ class UpdateFeedController {
   }
 }
 
-export { UpdateFeedController };
+export const updateFeedController = new UpdateFeedController();

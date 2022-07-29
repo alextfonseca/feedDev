@@ -24,7 +24,7 @@ class CreateUserController {
 
     const password = bcrypt.hashSync(reqPass, bcrypt.genSaltSync(10));
 
-    const { insertedId } = await collection.insertOne({
+    const user = await collection.insertOne({
       name,
       email,
       password,
@@ -32,8 +32,8 @@ class CreateUserController {
 
     return res
       .status(200)
-      .json({ message: "Usuário criado com sucesso", id: insertedId });
+      .json({ message: "Usuário criado com sucesso", data: user });
   }
 }
 
-export { CreateUserController };
+export const createUserController = new CreateUserController();

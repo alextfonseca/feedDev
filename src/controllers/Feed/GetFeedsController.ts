@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { ObjectId } from "mongodb";
 import { connectToDatabase } from "../../services/mongodb";
-import { ExtendedAuthRequest } from "../../types/types";
+import { ExtendedAuthRequest } from "../../types";
 
 class GetFeedsController {
   async handle(req: ExtendedAuthRequest, res: Response) {
@@ -15,4 +15,4 @@ class GetFeedsController {
   }
 }
 
-export { GetFeedsController };
+export const getFeedsController = new GetFeedsController();
