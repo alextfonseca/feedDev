@@ -1,14 +1,18 @@
-import { Request, Response } from "express";
+import { Response } from "express";
 import { ObjectId } from "mongodb";
 import { connectToDatabase } from "../../services/mongodb";
 import { ExtendedAuthRequest } from "../../types";
+import { handleResponse } from "../../util/response";
 
-class CreateFeedController {
-  async handle(req: ExtendedAuthRequest, res: Response) {
+export const CreateFeedController = async (
+  req: ExtendedAuthRequest,
+  res: Response,
+) => {
+  try {
     const { title, description, url } = req.body;
 
     if (!title || !description || !url) {
-      return res.status(400).json({ message: "Dados insuficientes" });
+      handleResponse(res, 400, "insufficient data");
     }
 
     // Joi Celebrate
@@ -16,25 +20,23 @@ class CreateFeedController {
     const db = await connectToDatabase();
     const collection = db.collection("feeds");
 
-    const { id } = req;
+    const userId = req.locals.auth.id;
 
-    const checkUser = await collection.findOne({ id });
+    const checkUser = await collection.findOne({ userId });
 
     if (checkUser) {
-      return res.status(400).json({ message: "Usuário não encontrado" });
+      handleResponse(res, 400, "User not found");
     }
 
     const { insertedId } = await collection.insertOne({
       title,
       description,
       url,
-      userId: new ObjectId(id),
+      userId: new ObjectId(userId),
     });
 
-    return res
-      .status(200)
-      .json({ message: "Feed criado com sucesso", id: insertedId });
+    handleResponse(res, 200, "Feed created successfully", insertedId);
+  } catch (error) {
+    handleResponse(res, 400, error);
   }
-}
-
-export const createFeedController = new CreateFeedController();
+};

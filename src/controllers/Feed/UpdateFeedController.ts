@@ -2,22 +2,26 @@ import { Request, Response } from "express";
 import { ObjectId } from "mongodb";
 import { connectToDatabase } from "../../services/mongodb";
 import { ExtendedAuthRequest } from "../../types";
+import { handleResponse } from "../../util/response";
 
-class UpdateFeedController {
-  async handle(req: ExtendedAuthRequest, res: Response) {
+export const UpdateFeedController = async (
+  req: ExtendedAuthRequest,
+  res: Response,
+) => {
+  try {
     const { title, description, url } = req.body;
 
     const db = await connectToDatabase();
     const collection = db.collection("feeds");
 
-    const { id } = req;
+    const userId = req.locals.auth.id;
 
-    const feeds = await collection.findOne({ _id: new ObjectId(req.params.id) });
+    const feeds = await collection.findOne({
+      _id: new ObjectId(req.params.id),
+    });
 
-    if (feeds.userId.toString() !== id) {
-      return res
-        .status(401)
-        .json({ statusCode: 401, errors: "Não autorizado" });
+    if (feeds.userId.toString() !== userId) {
+      handleResponse(res, 401, "Not authorized");
     }
 
     await collection.updateOne(
@@ -30,9 +34,8 @@ class UpdateFeedController {
         },
       },
     );
-
-    return res.status(200).json({ message: "Feed atualizado com sucesso" });
+    handleResponse(res, 200, "Feed updated successfully");
+  } catch (error) {
+    handleResponse(res, 500, error);
   }
-}
-
-export const updateFeedController = new UpdateFeedController();
+};

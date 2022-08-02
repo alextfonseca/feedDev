@@ -4,9 +4,14 @@ import { connectToDatabase } from "../../services/mongodb";
 import bcrypt from "bcrypt";
 
 import jwt from "jsonwebtoken";
+import { handleResponse } from "../../util/response";
+import { ExtendedAuthRequest } from "../../types";
 
-class AuthUserController {
-  async handle(req: Request, res: Response) {
+export const AuthUserController = async (
+  req: ExtendedAuthRequest,
+  res: Response,
+) => {
+  try {
     const { email, password } = req.body;
 
     const db = await connectToDatabase();
@@ -15,21 +20,18 @@ class AuthUserController {
     const user = await collection.findOne({ email });
 
     if (!email || !(await bcrypt.compare(password, user.password))) {
-      return res.status(400).json({
-        message: "Falha ao fazer o login! Verifique suas credenciais!",
-      });
+      handleResponse(res, 400, "Invalid credentials");
     }
 
     const accessToken = jwt.sign(
       {
         email: user.email,
       },
-      "superSenha",
+      process.env.JWT_PASSWORD,
       { subject: user._id.toString(), expiresIn: "30d" },
     );
-
-    res.status(200).json({ accessToken });
+    handleResponse(res, 200, accessToken);
+  } catch (error) {
+    handleResponse(res, 400, error);
   }
-}
-
-export const authUserController = new AuthUserController();
+};

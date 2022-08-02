@@ -1,10 +1,10 @@
 import { Router } from "express";
-import { authUserController } from "../controllers/User/AuthUserController";
-import { createUserController } from "../controllers/User/CreateUserController";
+import { AuthUserController } from "../controllers/User/AuthUserController";
+import { CreateUserController } from "../controllers/User/CreateUserController";
 
 const userRoutes = Router();
 
-userRoutes.post("/", createUserController.handle);
-userRoutes.post("/auth", authUserController.handle);
+userRoutes.post("/", CreateUserController);
+userRoutes.post("/auth", AuthUserController);
 
 export { userRoutes };

@@ -1,23 +1,15 @@
 import { Router } from "express";
-import { createFeedController } from "../controllers/Feed/CreateFeedController";
-import { deleteFeedController } from "../controllers/Feed/DeleteFeedController";
-import { getFeedsController } from "../controllers/Feed/GetFeedsController";
-import { updateFeedController } from "../controllers/Feed/UpdateFeedController";
-import { Authenticated } from "../middlewares/Authenticated";
-
-// import * as FeedController from "../controllers/Feed/FeedController";
-
-
-// FeedController.create
-// FeedController.update
-// FeedController.delete
+import { CreateFeedController } from "../controllers/Feed/CreateFeedController";
+import { DeleteFeedController } from "../controllers/Feed/DeleteFeedController";
+import { GetFeedsController } from "../controllers/Feed/GetFeedsController";
+import { UpdateFeedController } from "../controllers/Feed/UpdateFeedController";
+import { Authenticated } from "../middleware/Authenticated";
 
 const feedRoutes = Router();
 
-feedRoutes.post("/", Authenticated, createFeedController.handle);
-feedRoutes.get("/", Authenticated, getFeedsController.handle);
-feedRoutes.put("/:id", Authenticated, updateFeedController.handle);
-feedRoutes.delete("/:id", Authenticated, deleteFeedController.handle);
+feedRoutes.post("/", Authenticated, CreateFeedController);
+feedRoutes.get("/", Authenticated, GetFeedsController);
+feedRoutes.put("/:id", Authenticated, UpdateFeedController);
+feedRoutes.delete("/:id", Authenticated, DeleteFeedController);
 
 export { feedRoutes };
-

@@ -1,13 +1,9 @@
 import { Request } from "express";
 
 export interface ExtendedAuthRequest extends Request {
-  id: string;
+  locals: {
+    auth: {
+      id: string;
+    };
+  };
 }
-
-// export interface ExtendedAuthRequest extends NextApiRequest {
-//   locals: {
-//     auth: {
-//       id: string
-//     }
-//   }
-// }

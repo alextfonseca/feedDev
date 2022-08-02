@@ -1,12 +1,11 @@
 const { MongoClient } = require("mongodb");
 
 async function connectToDatabase() {
-  const url =
-    "mongodb+srv://alexDev:teste123@cluster0.3cbh4.mongodb.net/?retryWrites=true&w=majority";
+  const url = process.env.MONGODB_URL;
 
   const client = await MongoClient.connect(url, { useNewUrlParser: true });
 
-  const db = client.db("feedDev");
+  const db = client.db(process.env.MONGODB_DBNAME);
 
   return db;
 }

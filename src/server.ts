@@ -1,37 +1,16 @@
-import express, { NextFunction, Request, Response } from "express";
+import express from "express";
 import { router } from "./app";
+import dotenv from "dotenv";
 
-const app = express();
-app.use(express.json());
-app.use(router);
+const server = express();
+dotenv.config();
 
-app.use(
-  (err: Error, request: Request, response: Response, next: NextFunction) => {
-    if (err instanceof Error) {
-      return response.status(400).json({
-        error: err.message,
-      });
-    }
+server.use(express.json());
 
-    return response.status(500).json({
-      status: "error",
-      message: "Internal Server Error",
-    });
-  },
-);
+server.use(router);
 
-app.listen(3333);
+const port = process.env.PORT || 3333;
 
-
-// import http from 'http'
-// import app from './app'
-// import dotenv from 'dotenv'
-// dotenv.config()
-
-// const server = http.createServer(app)
-
-// const port = process.env.PORT || 3001
-
-// server.listen(port, () => {
-//   console.log(`Server running on port: ${port}!`)
-// })
+server.listen(port, () => {
+  console.log(`Server running on port: ${port}!`);
+});

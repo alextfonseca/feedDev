@@ -2,17 +2,25 @@ import { Request, Response } from "express";
 import { ObjectId } from "mongodb";
 import { connectToDatabase } from "../../services/mongodb";
 import { ExtendedAuthRequest } from "../../types";
+import { handleResponse } from "../../util/response";
 
-class GetFeedsController {
-  async handle(req: ExtendedAuthRequest, res: Response) {
+export const GetFeedsController = async (
+  req: ExtendedAuthRequest,
+  res: Response,
+) => {
+  try {
     const db = await connectToDatabase();
     const collection = db.collection("feeds");
-    const { id } = req;
+    const userId = req.locals.auth.id;
 
-    const feeds = await collection.find({ userId: new ObjectId(id) }).toArray();
+    const feeds = await collection
+      .find({ userId: new ObjectId(userId) })
+      .toArray();
 
-    return res.status(200).json({ message: feeds });
+    console.log(userId);
+
+    handleResponse(res, 200, feeds);
+  } catch (error) {
+    handleResponse(res, 500, error);
   }
-}
-
-export const getFeedsController = new GetFeedsController();
+};

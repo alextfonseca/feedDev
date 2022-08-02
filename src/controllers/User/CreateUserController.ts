@@ -2,13 +2,14 @@ import { connectToDatabase } from "../../services/mongodb";
 
 import bcrypt from "bcrypt";
 import { Request, Response } from "express";
+import { handleResponse } from "../../util/response";
 
-class CreateUserController {
-  async handle(req: Request, res: Response) {
+export const CreateUserController = async (req: Request, res: Response) => {
+  try {
     const { name, email, password: reqPass } = req.body;
 
     if (!name || !email || !reqPass) {
-      return res.status(400).json({ message: "Dados insuficientes" });
+      handleResponse(res, 400, "insufficient data");
     }
 
     const db = await connectToDatabase();
@@ -17,9 +18,7 @@ class CreateUserController {
     const checkUser = await collection.findOne({ email });
 
     if (checkUser) {
-      return res
-        .status(400)
-        .json({ message: "Esse e-mail já esta sendo utilizado" });
+      handleResponse(res, 400, "this email is already being used");
     }
 
     const password = bcrypt.hashSync(reqPass, bcrypt.genSaltSync(10));
@@ -30,10 +29,8 @@ class CreateUserController {
       password,
     });
 
-    return res
-      .status(200)
-      .json({ message: "Usuário criado com sucesso", data: user });
+    handleResponse(res, 200, "User created successfully", user);
+  } catch (error) {
+    handleResponse(res, 400, error);
   }
-}
-
-export const createUserController = new CreateUserController();
+};
